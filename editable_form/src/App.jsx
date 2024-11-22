@@ -258,12 +258,12 @@ function App() {
           </button>
         </form>
 
-        {Object.keys(currentData).length > 0 && (
+        {/* {Object.keys(currentData).length > 0 && (
           <div>
             <h3 className="mt-6 text-xl font-bold">Changes Detected:</h3>
             <pre>{JSON.stringify(currentData, null, 2)}</pre>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
