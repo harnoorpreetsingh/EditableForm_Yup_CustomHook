@@ -184,7 +184,7 @@ function App() {
           {errors.gender && <p>{errors.gender.message}</p>}
           <br />
 
-          {/* Hobbies */}
+          {/* Hobbiess */}
           <label className="text-2xl font-semibold">Hobbies:</label>
           {fields.map((item, index) => (
             <div key={item.id}>
