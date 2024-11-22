@@ -67,7 +67,8 @@ function App() {
 
   // Handle form submission
   const onSubmit = (data) => {
-    // Prepare the result in the desired format
+    // Preparing the result in the desired format
+    
     const result = {};
 
     // Compare all fields in the initialData with the data submitted
@@ -270,3 +271,4 @@ function App() {
 }
 
 export default App;
+ 
