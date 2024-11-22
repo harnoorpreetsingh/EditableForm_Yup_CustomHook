@@ -35,11 +35,11 @@ const schema = yup.object().shape({
 });
 
 function App() {
-  // Initial data and current form data state
+  // Initial data with the birthday in the 'yyyy-mm-dd' format
   const [initialData, setInitialData] = useState({
     name: "John Doe",
     email: "john@gmail.com",
-    birthday: "2024-11-21",
+    birthday: "2024-11-21", // Date as string (yyyy-mm-dd)
     gender: "male",
     hobbies: ["Walk the dog", "Prepare lunch", "Evening walk"],
     qualifications: {
@@ -67,31 +67,35 @@ function App() {
 
   // Handle form submission
   const onSubmit = (data) => {
-    console.log(data); // Check the form data on submission
-    setCurrentData(data); // Set the updated form data
-  };
+    // Prepare the result in the desired format
+    const result = {};
 
-  // Compare old data with new data
-  const getChanges = () => {
-    const changes = {};
-    let modified = false;
-
-    // Compare initial data with current data
+    // Compare all fields in the initialData with the data submitted
     Object.keys(initialData).forEach((key) => {
-      if (JSON.stringify(initialData[key]) !== JSON.stringify(currentData[key])) {
-        changes[key] = {
-          old: initialData[key],
-          new: currentData[key],
+      let oldValue = initialData[key];
+      let newValue = data[key];
+
+      // Special case: If field is of type "Date" (e.g., birthday)
+      if (key === "birthday") {
+        oldValue = initialData[key]; // Date as string (yyyy-mm-dd)
+        newValue = new Date(data[key]).toISOString(); // Convert to the full ISO string format (T18:30:00.000Z)
+      }
+
+      // Check if the value has changed and log the difference
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        result[key] = {
+          old: oldValue,
+          new: newValue,
         };
-        modified = true;
       }
     });
 
-    return { modified, changes };
-  };
+    // Log the result with the changes
+    console.log(result);
 
-  // Get changes (fields that were modified)
-  const { modified, changes } = getChanges();
+    // Set the updated form data
+    setCurrentData(data);
+  };
 
   return (
     <div className="w-full text-center bg-slate-500 text-white">
@@ -140,6 +144,8 @@ function App() {
                 {...field}
                 className="ml-2 bg-slate-400 hover:bg-slate-600 p-2 rounded-lg font-semibold mt-5 text-center"
                 type="date"
+                value={field.value} // Keep the value as string for date input
+                onChange={(e) => field.onChange(e.target.value)} // Ensure this updates the string correctly
               />
             )}
           />
@@ -202,8 +208,6 @@ function App() {
               </button>
             </div>
           ))}
-
-          {/* "+" Button: Add hobby */}
           <button
             type="button"
             onClick={() => append("")}
@@ -228,7 +232,7 @@ function App() {
                       <input
                         {...field}
                         type="checkbox"
-                        checked={field.value || false} // Treating undefined as false
+                        checked={field.value || false}
                         className="mr-2"
                         onChange={(e) => field.onChange(e.target.checked)}
                       />
@@ -240,8 +244,6 @@ function App() {
               </div>
             )
           )}
-
-          {/* Display the qualifications error */}
           {errors.qualifications && (
             <p className="text-red-500 font-bold bg-yellow-300">{errors.qualifications?.root.message}</p>
           )}
@@ -250,39 +252,19 @@ function App() {
 
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mt-4"
           >
             Submit
           </button>
         </form>
+
+        {Object.keys(currentData).length > 0 && (
+          <div>
+            <h3 className="mt-6 text-xl font-bold">Changes Detected:</h3>
+            <pre>{JSON.stringify(currentData, null, 2)}</pre>
+          </div>
+        )}
       </div>
-
-      {/* Display changes (Old vs New) */}
-      {modified && (
-  <div className="p-4 mt-4 bg-slate-700 text-white">
-    <h2 className="text-2xl font-bold mb-4">Changed Fields:</h2>
-    <ul className="space-y-2">
-      {Object.keys(changes).map((key) => (
-        <li key={key} className="flex flex-col">
-          <span className="font-semibold text-lg ">{key}:</span>
-          
-          {/* Old Value */}
-          <div className="flex items-center">
-            <span className="mr-2  text-gray-300 font-semibold text-lg">Old:</span>
-            <span className="p-2 bg-gray-600 rounded-lg text-sm">{JSON.stringify(changes[key].old)}</span>
-          </div>
-          
-          {/* New Value */}
-          <div className="flex items-center mt-1">
-            <span className="mr-2 font-semibold text-lg text-gray-300">New:</span>
-            <span className="p-2 bg-green-600 rounded-lg text-sm">{JSON.stringify(changes[key].new)}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
     </div>
   );
 }
