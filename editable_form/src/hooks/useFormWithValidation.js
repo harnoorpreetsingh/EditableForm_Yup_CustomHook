@@ -47,19 +47,20 @@ export const useFormWithValidation = (initialData) => {
     defaultValues: initialData,
   });
 
+  // Use field array 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "hobbies",
   });
 
-  // Handle form submission
+  // Handling form submission
   const onSubmit = (data) => {
     const result = {
       isModified: false,
       values: {},
     };
 
-    // Compare all fields in the initialData with the data submitted
+    // Comparing all fields in the initialData with the data submitted
     Object.keys(initialData).forEach((key) => {
       let oldValue = initialData[key];
       let newValue = data[key];
@@ -70,18 +71,21 @@ export const useFormWithValidation = (initialData) => {
         newValue = new Date(data[key]).toISOString(); // Convert to ISO string
       }
 
-      // Check if the value has changed
+      // Checking if the value has changed
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
         result.isModified = true;
         result.values[key] = { old: oldValue, new: newValue };
       }
-    });
+      
+      // console.log(result.values.hobbies?.new.length, "check in g resulttt")
+    }
+  );
 
-    // Set isModified to true if any change detected
+  //another check
     if (result.isModified) {
       console.log(result);
     }
-
+    //setting data
     setCurrentData(data); // Update current data
   };
 

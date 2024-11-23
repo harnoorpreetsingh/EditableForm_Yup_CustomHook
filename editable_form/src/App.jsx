@@ -1,6 +1,5 @@
-import { useFormWithValidation } from "./hooks/useFormWithValidation.js"; 
-import { Controller } from "react-hook-form"; 
-
+import { useFormWithValidation } from "./hooks/useFormWithValidation.js";
+import { Controller } from "react-hook-form";
 
 function App() {
   // Initial data for the form
@@ -30,6 +29,9 @@ function App() {
     onSubmit,
   } = useFormWithValidation(initialData);
 
+  const getLength = (res) => {
+    console.log(res);
+  };
   return (
     <div className="w-full text-center bg-slate-500 text-white">
       <h1 className="text-4xl font-bold p-4">Edit User Details</h1>
@@ -100,7 +102,9 @@ function App() {
                   value="male"
                   checked={field.value === "male" ? true : false}
                 />
-                <label htmlFor="male" className="ml-2 text-xl">Male</label>
+                <label htmlFor="male" className="ml-2 text-xl">
+                  Male
+                </label>
 
                 <input
                   {...field}
@@ -110,7 +114,9 @@ function App() {
                   value="female"
                   checked={field.value === "female" ? true : false}
                 />
-                <label htmlFor="female" className="ml-2 text-xl">Female</label>
+                <label htmlFor="female" className="ml-2 text-xl">
+                  Female
+                </label>
               </>
             )}
           />
@@ -135,7 +141,14 @@ function App() {
               />
               <button
                 type="button"
-                onClick={() => remove(index)}
+                onClick={() => {
+                  if (fields.length > 1) {
+                    remove(index);
+                  }
+                }}
+                disabled={
+                  fields.length === 1
+                } /* Disable the '-' button when there is only one hobby */
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2 ml-2"
               >
                 -
@@ -169,7 +182,8 @@ function App() {
                         checked={field.value || false}
                         className="mr-2"
                       />
-                      {qualification.charAt(0).toUpperCase() + qualification.slice(1)}
+                      {qualification.charAt(0).toUpperCase() +
+                        qualification.slice(1)}
                     </label>
                   )}
                 />
@@ -177,7 +191,9 @@ function App() {
             )
           )}
           {errors.qualifications && (
-            <p className="text-red-500 font-bold bg-yellow-300">{errors.qualifications?.root.message}</p>
+            <p className="text-red-500 font-bold bg-yellow-300">
+              {errors.qualifications?.root.message}
+            </p>
           )}
 
           <br />
@@ -190,7 +206,9 @@ function App() {
           </button>
         </form>
 
-        {isModified && <p className="text-red-500 mt-4">Form has been modified.</p>}
+        {isModified && (
+          <p className="text-red-500 mt-4">Form has been modified.</p>
+        )}
       </div>
     </div>
   );
