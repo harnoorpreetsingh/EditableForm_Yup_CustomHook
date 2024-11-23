@@ -55,6 +55,7 @@ export const useFormWithValidation = (initialData) => {
 
   // Handling form submission
   const onSubmit = (data) => {
+    alert("Check Console!")
     const result = {
       isModified: false,
       values: {},
