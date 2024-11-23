@@ -10,6 +10,7 @@ export const useFormWithValidation = (initialData) => {
   const [isModified, setIsModified] = useState(false);
 
   // React Hook Form setup
+  //resolver will use/call schema defined
   const {
     control,
     handleSubmit,
@@ -21,13 +22,16 @@ export const useFormWithValidation = (initialData) => {
     defaultValues: initialData,
   });
 
-  // Use field array
+  // Use field array for managing fields of hobby
   const { fields, append, remove } = useFieldArray({
     control,
     name: "hobbies",
   });
 
   // Handling form submission
+  //data is provided by hook form having values
+  //is modified returns default state's status must check it's structure
+  //this structure gets logged out as object 
   const onSubmit = (data) => {
     alert("Check Console!");
     const result = {
@@ -44,13 +48,14 @@ export const useFormWithValidation = (initialData) => {
 
       // For date fields ( birthday)
       if (key === "birthday") {
-        oldValue = convertISODateString(initialData[key]); // Date as string (yyyy-mm-dd)
-        newValue = convertISODateString(data[key]); // Convert to ISO string
+        oldValue = convertISODateString(initialData[key]); // Convert initial Date to ISO string
+        newValue = convertISODateString(data[key]); // Convert changed Date to ISO string
         // console.log(oldValue, "old value");
         // console.log(newValue, "new value");
       }
 
       // Checking if the value has changed
+      //checks which value changed & which didn't 
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
         result.isModified = true;
         result.values[key] = { old: oldValue, new: newValue };
@@ -59,7 +64,7 @@ export const useFormWithValidation = (initialData) => {
       // console.log(result.values.hobbies?.new.length, "check in g resulttt")
     });
 
-
+    //logging data on console conditioned on modified state
     if (result.isModified === false) {
       console.log(result);
     }
@@ -68,10 +73,11 @@ export const useFormWithValidation = (initialData) => {
     if (result.isModified) {
       console.log(result);
     }
-    //setting data
+    //setting data into state
     setCurrentData(data); // Update current data
   };
 
+  //returning fields to be attached with form 
   return {
     control,
     handleSubmit,

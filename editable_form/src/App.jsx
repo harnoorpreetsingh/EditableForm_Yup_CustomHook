@@ -3,7 +3,7 @@ import { Controller } from "react-hook-form";
 import { convertISODateString } from "./utils/dateConvertISO.js";
 
 function App() {
-  // Initial data for the form
+  //Setting Initial data for the form
   const initialData = {
     name: "John Doe",
     email: "john@gmail.com",
@@ -19,6 +19,8 @@ function App() {
     },
   };
 
+  //using fields returned by our custom hook 
+  // and assigning initial data to it 
   const {
     control,
     handleSubmit,
@@ -160,7 +162,7 @@ function App() {
                 }}
                 disabled={
                   fields.length === 1
-                } /* Disable the '-' button when there is only one hobby */
+                } /* Disabling the '-' button when there is only one hobby */
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2 ml-2"
               >
                 -
