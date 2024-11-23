@@ -52,6 +52,8 @@ function App() {
   });
 
   const [currentData, setCurrentData] = useState({ ...initialData });
+  const [isModified, setIsModified] = useState(false)
+
 
   // React Hook Form setup
   const { control, handleSubmit, formState: { errors }, getValues } = useForm({
@@ -68,35 +70,54 @@ function App() {
   // Handle form submission
   const onSubmit = (data) => {
     // Preparing the result in the desired format
-    
-    const result = {};
+    const result = {
+      isModified: false,
+      values: {}
 
+    };
+  
     // Compare all fields in the initialData with the data submitted
     Object.keys(initialData).forEach((key) => {
       let oldValue = initialData[key];
       let newValue = data[key];
-
+  
       // Special case: If field is of type "Date" (e.g., birthday)
       if (key === "birthday") {
         oldValue = initialData[key]; // Date as string (yyyy-mm-dd)
         newValue = new Date(data[key]).toISOString(); // Convert to the full ISO string format (T18:30:00.000Z)
       }
-
+  
       // Check if the value has changed and log the difference
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
-        result[key] = {
+        result.isModified = true;
+        result.values[key] = {
           old: oldValue,
           new: newValue,
         };
       }
     });
 
+
+      //   if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+    //     result[key] = {
+    //       old: oldValue,
+    //       new: newValue,
+    //     };
+    //   }
+    // });
+  
+    // Add isModified to the result
+    result.isModified = true;
+  
     // Log the result with the changes
     console.log(result);
-
+  
     // Set the updated form data
     setCurrentData(data);
   };
+  
+  // console.log(isModified, "state checkingggg");
+  
 
   return (
     <div className="w-full text-center bg-slate-500 text-white">
@@ -236,6 +257,8 @@ function App() {
                         checked={field.value || false}
                         className="mr-2"
                         onChange={(e) => field.onChange(e.target.checked)}
+                        
+                        
                       />
                       {qualification.charAt(0).toUpperCase() +
                         qualification.slice(1)}
