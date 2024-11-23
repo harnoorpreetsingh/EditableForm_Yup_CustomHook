@@ -1,45 +1,13 @@
-import { useState } from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
-import * as yup from "yup";
+import { useFormWithValidation } from "./hooks/useFormWithValidation.js"; 
+import { Controller } from "react-hook-form"; 
 
-// Yup schema
-const schema = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  birthday: yup.date().required("Birthday is required"),
-  gender: yup.string().oneOf(["male", "female"], "Gender is required"),
-  hobbies: yup
-    .array()
-    .of(yup.string().min(1, "Hobby cannot be empty"))
-    .required("At least one hobby is required")
-    .min(1, "You must provide at least one hobby. Click on (+) button to add."),
-  qualifications: yup
-    .object({
-      tenth: yup.boolean(),
-      twelth: yup.boolean(),
-      graduation: yup.boolean(),
-      postGraduation: yup.boolean(),
-      diploma: yup.boolean(),
-    })
-    .test(
-      "at-least-one-qualification",
-      "At least one qualification must be selected before Submitting",
-      (value) => {
-        return Object.values(value || {}).some((val) => val === true);
-      }
-    ),
-});
 
 function App() {
-  // Initial data with the birthday in the 'yyyy-mm-dd' format
-  const [initialData, setInitialData] = useState({
+  // Initial data for the form
+  const initialData = {
     name: "John Doe",
     email: "john@gmail.com",
-    birthday: "2024-11-21", // Date as string (yyyy-mm-dd)
+    birthday: "2024-11-21",
     gender: "male",
     hobbies: ["Walk the dog", "Prepare lunch", "Evening walk"],
     qualifications: {
@@ -49,75 +17,18 @@ function App() {
       twelth: false,
       postGraduation: false,
     },
-  });
-
-  const [currentData, setCurrentData] = useState({ ...initialData });
-  const [isModified, setIsModified] = useState(false)
-
-
-  // React Hook Form setup
-  const { control, handleSubmit, formState: { errors }, getValues } = useForm({
-    resolver: yupResolver(schema),
-    mode: "onChange",
-    defaultValues: initialData,
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "hobbies",
-  });
-
-  // Handle form submission
-  const onSubmit = (data) => {
-    // Preparing the result in the desired format
-    const result = {
-      isModified: false,
-      values: {}
-
-    };
-  
-    // Compare all fields in the initialData with the data submitted
-    Object.keys(initialData).forEach((key) => {
-      let oldValue = initialData[key];
-      let newValue = data[key];
-  
-      // Special case: If field is of type "Date" (e.g., birthday)
-      if (key === "birthday") {
-        oldValue = initialData[key]; // Date as string (yyyy-mm-dd)
-        newValue = new Date(data[key]).toISOString(); // Convert to the full ISO string format (T18:30:00.000Z)
-      }
-  
-      // Check if the value has changed and log the difference
-      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
-        result.isModified = true;
-        result.values[key] = {
-          old: oldValue,
-          new: newValue,
-        };
-      }
-    });
-
-
-      //   if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
-    //     result[key] = {
-    //       old: oldValue,
-    //       new: newValue,
-    //     };
-    //   }
-    // });
-  
-    // Add isModified to the result
-    result.isModified = true;
-  
-    // Log the result with the changes
-    console.log(result);
-  
-    // Set the updated form data
-    setCurrentData(data);
   };
-  
-  // console.log(isModified, "state checkingggg");
-  
+
+  const {
+    control,
+    handleSubmit,
+    errors,
+    fields,
+    append,
+    remove,
+    isModified,
+    onSubmit,
+  } = useFormWithValidation(initialData);
 
   return (
     <div className="w-full text-center bg-slate-500 text-white">
@@ -206,7 +117,7 @@ function App() {
           {errors.gender && <p>{errors.gender.message}</p>}
           <br />
 
-          {/* Hobbiess */}
+          {/* Hobbies */}
           <label className="text-2xl font-semibold">Hobbies:</label>
           {fields.map((item, index) => (
             <div key={item.id}>
@@ -217,7 +128,8 @@ function App() {
                   <input
                     {...field}
                     className="ml-2 bg-slate-400 placeholder:text-yellow-300 hover:bg-slate-600 p-2 rounded-lg font-semibold mt-2 text-center"
-                    type="text" placeholder="Fill this to add other hobby"
+                    type="text"
+                    placeholder="Fill this to add other hobby"
                   />
                 )}
               />
@@ -256,12 +168,8 @@ function App() {
                         type="checkbox"
                         checked={field.value || false}
                         className="mr-2"
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        
-                        
                       />
-                      {qualification.charAt(0).toUpperCase() +
-                        qualification.slice(1)}
+                      {qualification.charAt(0).toUpperCase() + qualification.slice(1)}
                     </label>
                   )}
                 />
@@ -282,16 +190,10 @@ function App() {
           </button>
         </form>
 
-        {/* {Object.keys(currentData).length > 0 && (
-          <div>
-            <h3 className="mt-6 text-xl font-bold">Changes Detected:</h3>
-            <pre>{JSON.stringify(currentData, null, 2)}</pre>
-          </div>
-        )} */}
+        {isModified && <p className="text-red-500 mt-4">Form has been modified.</p>}
       </div>
     </div>
   );
 }
 
 export default App;
- 
