@@ -1,12 +1,13 @@
 import { useFormWithValidation } from "./hooks/useFormWithValidation.js";
 import { Controller } from "react-hook-form";
+import { convertISODateString } from "./utils/index.js";
 
 function App() {
   // Initial data for the form
   const initialData = {
     name: "John Doe",
     email: "john@gmail.com",
-    birthday: "2024-11-21",
+    birthday: new Date().toISOString(),
     gender: "male",
     hobbies: ["Walk the dog", "Prepare lunch", "Evening walk"],
     qualifications: {
@@ -29,9 +30,10 @@ function App() {
     onSubmit,
   } = useFormWithValidation(initialData);
 
-  const getLength = (res) => {
-    console.log(res);
-  };
+  // const getLength = (res) => {
+  //   console.log(res);
+  // };
+
   return (
     <div className="w-full text-center bg-slate-500 text-white">
       <h1 className="text-4xl font-bold p-4">Edit User Details</h1>
@@ -74,15 +76,25 @@ function App() {
           <Controller
             name="birthday"
             control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                className="ml-2 bg-slate-400 hover:bg-slate-600 p-2 rounded-lg font-semibold mt-5 text-center"
-                type="date"
-                value={field.value} // Keep the value as string for date input
-                onChange={(e) => field.onChange(e.target.value)} // Ensure this updates the string correctly
-              />
-            )}
+            render={({ field }) => {
+              const formattedDate = field.value
+                ? convertISODateString(field.value)
+                : "";
+
+              return (
+                <input
+                  {...field}
+                  className="ml-2 bg-slate-400 hover:bg-slate-600 p-2 rounded-lg font-semibold mt-5 text-center"
+                  type="date"
+                  value={formattedDate}
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value);
+                    const DateISO = newDate.toISOString();
+                    field.onChange(DateISO);
+                  }}
+                />
+              );
+            }}
           />
           {errors.birthday && <p>{errors.birthday.message}</p>}
           <br />
