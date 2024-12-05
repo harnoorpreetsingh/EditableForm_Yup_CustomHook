@@ -46,13 +46,31 @@ export const useFormWithValidation = (initialData) => {
 
       // console.log(newValue, "newValue");
 
-      // For date fields ( birthday)
-      if (key === "birthday") {
-        oldValue = convertISODateString(initialData[key]); // Convert initial Date to ISO string
-        newValue = convertISODateString(data[key]); // Convert changed Date to ISO string
-        // console.log(oldValue, "old value");
-        // console.log(newValue, "new value");
-      }
+      // For date fields ( field name dependent - birthday)
+      // if (key === "birthday") {
+      //   oldValue = convertISODateString(initialData[key]); // Convert initial Date to ISO string
+      //   newValue = convertISODateString(data[key]); // Convert changed Date to ISO string
+      //   // console.log(oldValue, "old value");
+      //   // console.log(newValue, "new value");
+      // }
+
+
+        // For date fields (generic handling)
+        if (typeof oldValue === "string" && oldValue.includes("T") && !isNaN(Date.parse(oldValue))) {
+          oldValue = convertISODateString(initialData[key]);
+          // Convert initial Date to ISO string 
+          newValue = convertISODateString(data[key]); // Convert changed Date to ISO string 
+        }
+
+        
+        //working explanation: 
+        // if (typeof oldValue === "string" && oldValue.includes("T") && !isNaN(Date.parse(oldValue))) {
+        //   // Check if oldValue is a string, contains "T" (indicating an ISO date string), and can be parsed as a valid date
+        //   oldValue = convertISODateString(initialData[key]); // Convert initial Date to ISO string
+        //   newValue = convertISODateString(data[key]); // Convert changed Date to ISO string
+        // }
+        
+
 
       // Checking if the value has changed
       //checks which value changed & which didn't 
